@@ -23,7 +23,8 @@ Das Projekt befindet sich in der aktiven Weiterentwicklung. Geplant ist, die App
 ## 🚀 Live-Demo
 
 Keine Installation notwendig. Die App läuft direkt im Browser:
-<a href="https://redskyer.github.io/School/" target="_blank">👉 **Hier klicken, um die Mathe-Safari zu starten!**</a>
+
+👉 **[Hier klicken, um die Mathe-Safari zu starten!](https://redskyer.github.io/School/)**
 
 ## 🛠 Nutzung & Installation (für Entwickler/Lehrkräfte)
 
