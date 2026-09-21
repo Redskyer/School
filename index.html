@@ -63,6 +63,7 @@
             background-size: 0.65rem auto;
         }
 
+        /* Animations */
         @keyframes pop {
             0% { transform: scale(0.9); opacity: 0; }
             60% { transform: scale(1.02); opacity: 1; }
@@ -415,9 +416,9 @@
                 let html = `
                     <div class="flex flex-col gap-3 bg-yellow-50/50 p-5 rounded-2xl border-2 border-yellow-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
                         <div class="text-sm text-yellow-700 font-bold uppercase tracking-wider">✨ 1. Streiche die Null:</div>
-                        <div class="font-mono text-xl md:text-2xl text-yellow-900 bg-white py-3 px-4 rounded-xl border border-yellow-200 w-full shadow-inner flex justify-center">${subV1} ${op} ${subV2} &nbsp;=&nbsp; ${subResStr}</div>
+                        <div class="font-mono text-xl md:text-2xl text-yellow-900 bg-white py-3 px-4 rounded-xl border border-yellow-200 w-full shadow-inner flex justify-center whitespace-nowrap">${subV1} ${op} ${subV2} &nbsp;=&nbsp; ${subResStr}</div>
                         <div class="text-sm text-emerald-700 font-bold mt-2 uppercase tracking-wider">✨ 2. Hänge sie wieder an:</div>
-                        <div class="font-mono text-xl md:text-2xl text-emerald-900 bg-white py-3 px-4 rounded-xl border border-emerald-200 w-full shadow-inner flex justify-center">${v1} ${op} ${v2} &nbsp;=&nbsp; ${resStr}</div>
+                        <div class="font-mono text-xl md:text-2xl text-emerald-900 bg-white py-3 px-4 rounded-xl border border-emerald-200 w-full shadow-inner flex justify-center whitespace-nowrap">${v1} ${op} ${v2} &nbsp;=&nbsp; ${resStr}</div>
                     </div>
                 `;
                 methods.push({ name: mName, html });
@@ -425,7 +426,7 @@
                 // Basis-Rechnung
                 let html = `
                     <div class="flex flex-col bg-blue-50/50 p-5 rounded-2xl border-2 border-blue-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
-                        <div class="font-mono text-2xl md:text-3xl font-black text-blue-900 bg-white py-4 px-6 rounded-xl border border-blue-200 w-full shadow-inner flex justify-center">${eqBase}</div>
+                        <div class="font-mono text-2xl md:text-3xl font-black text-blue-900 bg-white py-4 px-6 rounded-xl border border-blue-200 w-full shadow-inner flex justify-center whitespace-nowrap">${eqBase}</div>
                     </div>
                 `;
                 methods.push({ name: baseTitle, html });
@@ -466,8 +467,8 @@
                 let transName = isTens ? "Schrittweise (Hunderterübergang)" : "Schrittweise (Zehnerübergang)";
                 let html = `
                     <div class="flex flex-col gap-3 bg-indigo-50/50 p-5 rounded-2xl border-2 border-indigo-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
-                        <div class="font-mono text-xl md:text-2xl text-indigo-900 bg-white py-3 px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center">${t1}</div>
-                        <div class="font-mono text-xl md:text-2xl text-indigo-900 bg-white py-3 px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center">${t2}</div>
+                        <div class="font-mono text-xl md:text-2xl text-indigo-900 bg-white py-3 px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center whitespace-nowrap">${t1}</div>
+                        <div class="font-mono text-xl md:text-2xl text-indigo-900 bg-white py-3 px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center whitespace-nowrap">${t2}</div>
                     </div>
                 `;
                 methods.push({ name: transName, html });
@@ -551,8 +552,8 @@
                     `;
                 } else {
                     conclusion = `
-                        <div class="w-full mt-2 bg-gray-50 p-5 rounded-3xl border-2 border-gray-300 text-center text-gray-500 font-bold shadow-sm text-base md:text-lg max-w-md mx-auto">
-                            Rechne erst die linke Seite aus, um vergleichen zu können!
+                        <div class="w-full mt-2 bg-gray-50 p-5 rounded-3xl border-2 border-gray-300 text-center text-gray-500 font-bold shadow-sm text-base md:text-lg max-w-md mx-auto whitespace-nowrap">
+                            Rechne erst die linke Seite aus!
                         </div>
                     `;
                 }
@@ -610,7 +611,13 @@
         }
 
         function renderGapHTML(task, index) {
-            const inputField = `<input type="number" id="${task.id}-input-0" class="w-20 md:w-24 h-16 md:h-20 text-center text-4xl font-black text-blue-700 bg-white border-4 border-blue-300 rounded-2xl focus:border-blue-500 focus:shadow-xl outline-none transition-all mx-2 shadow-inner" autocomplete="off">`;
+            // Die absolute Position des Feedbacks ist nun auf die direkte `relative`-Wrapper-Box bezogen.
+            const inputField = `
+                <div class="relative inline-block mx-1 md:mx-2">
+                    <input type="number" id="${task.id}-input-0" class="w-20 md:w-24 h-16 md:h-20 text-center text-4xl font-black text-blue-700 bg-white border-4 border-blue-300 rounded-2xl focus:border-blue-500 focus:shadow-xl outline-none transition-all shadow-inner m-0" autocomplete="off">
+                    <span id="${task.id}-feedback-0" class="absolute -top-3 -right-3 md:-top-4 md:-right-4 text-2xl md:text-3xl opacity-0 bg-white rounded-full z-40 drop-shadow-md w-8 h-8 md:w-10 md:h-10 flex items-center justify-center transition-opacity leading-none"></span>
+                </div>
+            `;
             
             let partA = task.gapIndex === 0 ? inputField : `<span class="px-2 min-w-[3rem] text-center">${task.a}</span>`;
             let partB = task.gapIndex === 1 ? inputField : `<span class="px-2 min-w-[3rem] text-center">${task.b}</span>`;
@@ -625,10 +632,9 @@
                     
                     <div class="flex flex-col items-center justify-center w-full mt-6 gap-6">
                         <div class="flex items-center text-4xl md:text-5xl font-black text-gray-700 whitespace-nowrap justify-center w-full">
-                            ${partA} <span class="text-blue-400 mx-1 md:mx-3">${task.op}</span> ${partB} <span class="text-blue-400 mx-1 md:mx-3">=</span> ${partC}
+                            ${partA} <span class="text-blue-400 mx-1 md:mx-2">${task.op}</span> ${partB} <span class="text-blue-400 mx-1 md:mx-2">=</span> ${partC}
                         </div>
-                        <div class="flex flex-col items-center gap-3 w-full justify-center relative">
-                            <span id="${task.id}-feedback-0" class="text-4xl w-10 text-center opacity-0 transition-opacity absolute -top-16 md:-top-14 right-0"></span>
+                        <div class="flex flex-col items-center gap-3 w-full justify-center">
                             ${renderHelpButtons(task.id, 'blue')}
                         </div>
                     </div>
@@ -660,9 +666,11 @@
                     </div>
                     
                     <div class="flex flex-col items-center shrink-0 relative z-20 pt-10">
-                        <input type="number" id="${task.id}-input-${i}" class="w-16 h-16 md:w-20 md:h-20 rounded-xl md:rounded-2xl text-center text-3xl md:text-4xl font-black ${inputBg} border-4 shadow-inner outline-none transition-all">
-                        ${isLast ? '<span class="absolute -right-4 bottom-0 md:-right-6 md:-bottom-2 text-4xl md:text-5xl z-30 drop-shadow-md">🐍</span>' : ''}
-                        <span id="${task.id}-feedback-${i}" class="absolute top-2 -right-2 md:top-2 md:-right-3 text-xl md:text-3xl opacity-0 bg-white rounded-full z-30 drop-shadow-sm"></span>
+                        <div class="relative">
+                            <input type="number" id="${task.id}-input-${i}" class="w-16 h-16 md:w-20 md:h-20 rounded-xl md:rounded-2xl text-center text-3xl md:text-4xl font-black ${inputBg} border-4 shadow-inner outline-none transition-all m-0">
+                            ${isLast ? '<span class="absolute -right-4 bottom-0 md:-right-6 md:-bottom-2 text-4xl md:text-5xl z-30 drop-shadow-md pointer-events-none">🐍</span>' : ''}
+                            <span id="${task.id}-feedback-${i}" class="absolute -top-3 -right-3 md:-top-4 md:-right-4 text-2xl md:text-3xl opacity-0 bg-white rounded-full z-40 drop-shadow-md w-8 h-8 md:w-10 md:h-10 flex items-center justify-center transition-opacity leading-none"></span>
+                        </div>
                     </div>
                 `;
             });
@@ -692,12 +700,15 @@
 
         function renderCompareHTML(task, index) {
             const selectField = `
-                <select id="${task.id}-input-0" class="safari-select w-20 md:w-24 h-16 md:h-20 text-center text-4xl font-black text-purple-700 bg-white border-4 border-purple-300 rounded-2xl focus:border-purple-500 focus:shadow-xl outline-none transition-all mx-2 shadow-inner cursor-pointer">
-                    <option value="?" selected disabled>?</option>
-                    <option value="<"><</option>
-                    <option value=">">></option>
-                    <option value="=">=</option>
-                </select>
+                <div class="relative inline-block mx-1 md:mx-2">
+                    <select id="${task.id}-input-0" class="safari-select w-20 md:w-24 h-16 md:h-20 text-center text-4xl font-black text-purple-700 bg-white border-4 border-purple-300 rounded-2xl focus:border-purple-500 focus:shadow-xl outline-none transition-all shadow-inner cursor-pointer m-0">
+                        <option value="?" selected disabled>?</option>
+                        <option value="<"><</option>
+                        <option value=">">></option>
+                        <option value="=">=</option>
+                    </select>
+                    <span id="${task.id}-feedback-0" class="absolute -top-3 -right-3 md:-top-4 md:-right-4 text-2xl md:text-3xl opacity-0 transition-opacity bg-white rounded-full z-40 drop-shadow-md w-8 h-8 md:w-10 md:h-10 flex items-center justify-center leading-none"></span>
+                </div>
             `;
 
             const icon = task.isTens ? '🐘' : '🐒';
@@ -709,12 +720,11 @@
                     <div class="flex flex-col items-center justify-center w-full mt-8 gap-6">
                         <div class="flex flex-row flex-nowrap items-center justify-center w-full">
                             <div class="flex items-center text-3xl md:text-5xl font-black text-gray-700 whitespace-nowrap bg-white/70 px-4 md:px-6 py-4 rounded-3xl border-2 border-purple-100 shadow-sm">
-                                ${task.leftA} <span class="text-purple-400 mx-2">${task.leftOp}</span> ${task.leftB}
+                                ${task.leftA} <span class="text-purple-400 mx-1 md:mx-2">${task.leftOp}</span> ${task.leftB}
                             </div>
                             
-                            <div class="flex flex-col items-center relative shrink-0">
+                            <div class="flex flex-col items-center relative shrink-0 z-10">
                                 ${selectField}
-                                <span id="${task.id}-feedback-0" class="absolute -top-4 -right-4 text-3xl opacity-0 transition-opacity bg-white rounded-full"></span>
                             </div>
 
                             <div class="flex items-center text-3xl md:text-5xl font-black text-gray-700 whitespace-nowrap bg-white/70 px-4 md:px-6 py-4 rounded-3xl border-2 border-purple-100 shadow-sm">
