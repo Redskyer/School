@@ -116,24 +116,36 @@
                 </h3>
                 
                 <div class="flex flex-col gap-4">
-                    <div class="flex items-center justify-between p-4 bg-white rounded-xl border-2 border-emerald-100 shadow-sm w-full">
-                        <span class="text-lg font-bold text-gray-700">Zahlenraum bis:</span>
-                        <input type="number" id="val-normal" value="20" min="5" max="1000" class="w-24 text-center text-xl font-black text-emerald-700 border-4 border-emerald-300 rounded-xl p-2 focus:outline-none bg-emerald-50">
+                    <!-- Erweitert um Minimalwert für Zahlenraum -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-xl border-2 border-emerald-100 shadow-sm w-full gap-3 md:gap-0">
+                        <span class="text-lg font-bold text-gray-700">Zahlenraum:</span>
+                        <div class="flex items-center gap-2 self-start md:self-auto">
+                            <span class="text-gray-500 font-bold text-sm md:text-base">von</span>
+                            <input type="number" id="min-normal" value="1" min="0" max="1000" class="w-16 md:w-20 text-center text-xl font-black text-emerald-700 border-4 border-emerald-300 rounded-xl p-2 focus:outline-none bg-emerald-50">
+                            <span class="text-gray-500 font-bold text-sm md:text-base">bis</span>
+                            <input type="number" id="val-normal" value="20" min="5" max="1000" class="w-16 md:w-20 text-center text-xl font-black text-emerald-700 border-4 border-emerald-300 rounded-xl p-2 focus:outline-none bg-emerald-50">
+                        </div>
                     </div>
 
-                    <div class="flex items-center justify-between p-4 bg-white rounded-xl border-2 border-emerald-100 shadow-sm w-full">
-                        <span class="text-lg font-bold text-gray-700">Zehnerraum bis:</span>
-                        <input type="number" id="val-tens" value="100" min="10" step="10" max="1000" class="w-24 text-center text-xl font-black text-blue-700 border-4 border-blue-300 rounded-xl p-2 focus:outline-none bg-blue-50">
+                    <!-- Erweitert um Minimalwert für Zehnerraum -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-xl border-2 border-emerald-100 shadow-sm w-full gap-3 md:gap-0">
+                        <span class="text-lg font-bold text-gray-700">Zehnerraum:</span>
+                        <div class="flex items-center gap-2 self-start md:self-auto">
+                            <span class="text-gray-500 font-bold text-sm md:text-base">von</span>
+                            <input type="number" id="min-tens" value="10" min="0" step="10" max="1000" class="w-16 md:w-20 text-center text-xl font-black text-blue-700 border-4 border-blue-300 rounded-xl p-2 focus:outline-none bg-blue-50">
+                            <span class="text-gray-500 font-bold text-sm md:text-base">bis</span>
+                            <input type="number" id="val-tens" value="100" min="10" step="10" max="1000" class="w-16 md:w-20 text-center text-xl font-black text-blue-700 border-4 border-blue-300 rounded-xl p-2 focus:outline-none bg-blue-50">
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between p-4 bg-white rounded-xl border-2 border-emerald-100 shadow-sm w-full">
                         <span class="text-lg font-bold text-gray-700">Anzahl der Aufgaben:</span>
-                        <input type="number" id="val-count" value="10" min="1" max="50" class="w-24 text-center text-xl font-black text-emerald-700 border-4 border-emerald-300 rounded-xl p-2 focus:outline-none bg-emerald-50">
+                        <input type="number" id="val-count" value="10" min="1" max="50" class="w-20 text-center text-xl font-black text-emerald-700 border-4 border-emerald-300 rounded-xl p-2 focus:outline-none bg-emerald-50">
                     </div>
 
                     <div class="flex items-center justify-between p-4 bg-white rounded-xl border-2 border-emerald-100 shadow-sm w-full">
                         <span class="text-lg font-bold text-gray-700">Schritte der Rechenschlange:</span>
-                        <input type="number" id="val-snake-len" value="3" min="2" max="10" class="w-24 text-center text-xl font-black text-emerald-700 border-4 border-emerald-300 rounded-xl p-2 focus:outline-none bg-emerald-50">
+                        <input type="number" id="val-snake-len" value="3" min="2" max="10" class="w-20 text-center text-xl font-black text-emerald-700 border-4 border-emerald-300 rounded-xl p-2 focus:outline-none bg-emerald-50">
                     </div>
                 </div>
             </div>
@@ -212,7 +224,9 @@
 
     <script>
         let config = {
-            maxNormal: 20, maxTens: 100, taskCount: 10, snakeLen: 3,
+            minNormal: 1, maxNormal: 20, 
+            minTens: 10, maxTens: 100, 
+            taskCount: 10, snakeLen: 3,
             useClassic: true, useTens: true, useSnake: true, useCompare: true
         };
         let currentTasks = [];
@@ -222,8 +236,28 @@
         }
 
         function startSafari() {
+            // Werte auslesen
+            config.minNormal = parseInt(document.getElementById('min-normal').value, 10) || 1;
             config.maxNormal = parseInt(document.getElementById('val-normal').value, 10) || 20;
+            // Sicherstellen, dass min nicht größer als max ist
+            if (config.minNormal > config.maxNormal) {
+                let temp = config.minNormal;
+                config.minNormal = config.maxNormal;
+                config.maxNormal = temp;
+                document.getElementById('min-normal').value = config.minNormal;
+                document.getElementById('val-normal').value = config.maxNormal;
+            }
+
+            config.minTens = parseInt(document.getElementById('min-tens').value, 10) || 10;
             config.maxTens = parseInt(document.getElementById('val-tens').value, 10) || 100;
+            if (config.minTens > config.maxTens) {
+                let temp = config.minTens;
+                config.minTens = config.maxTens;
+                config.maxTens = temp;
+                document.getElementById('min-tens').value = config.minTens;
+                document.getElementById('val-tens').value = config.maxTens;
+            }
+
             config.taskCount = parseInt(document.getElementById('val-count').value, 10) || 10;
             config.snakeLen = parseInt(document.getElementById('val-snake-len').value, 10) || 3;
             if(config.snakeLen < 2) config.snakeLen = 2;
@@ -279,11 +313,11 @@
             for(let i = 0; i < config.taskCount; i++) {
                 let type = availableTypes[rand(0, availableTypes.length - 1)];
 
-                if (type === 'classic') currentTasks.push(createGapTask(config.maxNormal, false));
-                else if (type === 'tens') currentTasks.push(createGapTask(config.maxTens, true));
-                else if (type === 'snake') currentTasks.push(createSnakeTask(config.maxNormal, config.snakeLen, false));
-                else if (type === 'snake-tens') currentTasks.push(createSnakeTask(config.maxTens, config.snakeLen, true));
-                else if (type === 'compare') currentTasks.push(createCompareTask(config.maxNormal, config.maxTens));
+                if (type === 'classic') currentTasks.push(createGapTask(config.minNormal, config.maxNormal, false));
+                else if (type === 'tens') currentTasks.push(createGapTask(config.minTens, config.maxTens, true));
+                else if (type === 'snake') currentTasks.push(createSnakeTask(config.minNormal, config.maxNormal, config.snakeLen, false));
+                else if (type === 'snake-tens') currentTasks.push(createSnakeTask(config.minTens, config.maxTens, config.snakeLen, true));
+                else if (type === 'compare') currentTasks.push(createCompareTask(config.minNormal, config.maxNormal, config.minTens, config.maxTens));
             }
             
             renderTasks();
@@ -292,21 +326,27 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function createGapTask(max, isTens) {
+        function createGapTask(min, max, isTens) {
             const isAddition = Math.random() > 0.5;
             let step = isTens ? 10 : 1;
+            
+            let minBase = Math.ceil(min / step);
             let maxBase = Math.floor(max / step);
-            if(maxBase < 2) maxBase = 2;
+            if (maxBase < minBase) maxBase = minBase;
 
             let a, b, c;
             if (isAddition) {
-                let baseC = rand(2, maxBase);
+                // Bei Plus: Ergebnis 'c' muss im Bereich liegen.
+                let minC = Math.max(2, minBase);
+                let baseC = rand(minC, Math.max(minC, maxBase));
                 let baseA = rand(1, baseC - 1);
                 c = baseC * step;
                 a = baseA * step;
                 b = c - a;
             } else {
-                let baseA = rand(2, maxBase);
+                // Bei Minus: Startwert 'a' muss im Bereich liegen.
+                let minA = Math.max(2, minBase);
+                let baseA = rand(minA, Math.max(minA, maxBase));
                 let baseB = rand(1, baseA - 1);
                 a = baseA * step;
                 b = baseB * step;
@@ -322,26 +362,33 @@
             };
         }
 
-        function createSnakeTask(max, len, isTens) {
+        function createSnakeTask(min, max, len, isTens) {
             let stepMult = isTens ? 10 : 1;
+            let minBase = Math.ceil(min / stepMult);
             let maxBase = Math.floor(max / stepMult);
-            if (maxBase < 2) maxBase = 2;
-            let startBase = rand(2, maxBase - 1);
+            if (maxBase <= minBase) maxBase = minBase + 1; // Spielraum erzwingen
+
+            let startBase = rand(minBase, maxBase - 1);
             let currentBase = startBase;
             let steps = [];
 
             for (let i = 0; i < len; i++) {
                 let op = Math.random() > 0.5 ? '+' : '-';
                 
+                // Grenzen korrigieren
                 if (currentBase >= maxBase - 1) op = '-';
-                if (currentBase <= 2) op = '+';
+                if (currentBase <= minBase + 1) op = '+';
 
                 let valBase;
                 if (op === '+') {
-                    valBase = rand(1, maxBase - currentBase);
+                    let maxAdd = maxBase - currentBase;
+                    if (maxAdd < 1) maxAdd = 1;
+                    valBase = rand(1, maxAdd);
                     currentBase += valBase;
                 } else {
-                    valBase = rand(1, currentBase - 1);
+                    let maxSub = currentBase - minBase;
+                    if (maxSub < 1) maxSub = 1;
+                    valBase = rand(1, maxSub);
                     currentBase -= valBase;
                 }
                 steps.push({ op, val: valBase * stepMult, res: currentBase * stepMult });
@@ -355,23 +402,26 @@
             };
         }
 
-        function createCompareTask(maxNorm, maxTens) {
+        function createCompareTask(minNorm, maxNorm, minTens, maxTens) {
             const isTens = Math.random() > 0.5;
             const step = isTens ? 10 : 1;
+            const min = isTens ? minTens : minNorm;
             const max = isTens ? maxTens : maxNorm;
+            
+            let minBase = Math.ceil(min / step);
             let maxBase = Math.floor(max / step);
-            if(maxBase < 2) maxBase = 2;
+            if(maxBase < minBase) maxBase = minBase;
 
             const leftOp = Math.random() > 0.5 ? '+' : '-';
             let leftA, leftB, leftVal;
             
             if (leftOp === '+') {
-                let baseVal = rand(2, maxBase);
+                let baseVal = rand(Math.max(2, minBase), Math.max(2, maxBase));
                 leftA = rand(1, baseVal - 1) * step;
                 leftVal = baseVal * step;
                 leftB = leftVal - leftA;
             } else {
-                let baseA = rand(2, maxBase);
+                let baseA = rand(Math.max(2, minBase), Math.max(2, maxBase));
                 leftB = rand(1, baseA - 1) * step;
                 leftA = baseA * step;
                 leftVal = leftA - leftB;
@@ -381,7 +431,8 @@
             let diff = diffOptions[rand(0, 4)];
             let rightVal = leftVal + diff;
             
-            if(rightVal <= 0) rightVal = leftVal + step;
+            // Grenzen absichern
+            if(rightVal < min) rightVal = leftVal + step;
             if(rightVal > max) rightVal = leftVal - step;
 
             let correctSymbol = '=';
@@ -400,10 +451,9 @@
             let methods = [];
             let resNum = op === '+' ? v1 + v2 : v1 - v2;
             
-            // NEU: Hilfsfunktion für perfekt gestaffelte Abstände (Handy vs. PC)
+            // Die Abstände (mx-1 für Handy, md:mx-3 für PC) und das geschützte Leerzeichen bleiben genau so erhalten!
             const formatEqClean = (a, operator, b, result) => {
-                // Auf Handys (mx-1) rücken sie enger zusammen, auf dem PC (md:mx-3) bleiben sie breit
-                return `${a}<span class="mx-1 md:mx-3">${operator}</span>${b}<span class="mx-1 md:mx-3">=</span>${result}`;
+                return `${a}<span class="mx-1 md:mx-3">${operator}</span>${b}<span class="mx-1 md:mx-3">&nbsp;=&nbsp;</span>${result}`;
             };
 
             let resStr = showSolution ? resNum : '<span class="text-rose-600 font-black">?</span>';
@@ -434,7 +484,7 @@
                 // Basis-Rechnung
                 let html = `
                     <div class="flex flex-col bg-blue-50/50 p-4 md:p-5 rounded-2xl border-2 border-blue-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
-                        <div class="font-mono text-xl md:text-3xl font-black text-blue-900 bg-white py-3 md:py-4 px-3 md:px-6 rounded-xl border border-blue-200 w-full shadow-inner flex justify-center whitespace-nowrap">${eqBase}</div>
+                        <div class="font-mono text-lg md:text-3xl font-black text-blue-900 bg-white py-3 md:py-4 px-3 md:px-6 rounded-xl border border-blue-200 w-full shadow-inner flex justify-center whitespace-nowrap">${eqBase}</div>
                     </div>
                 `;
                 methods.push({ name: baseTitle, html });
@@ -511,7 +561,7 @@
             if (!helpBoxEl.classList.contains('hidden') && helpBoxEl.dataset.currentMode === clickedMode) {
                 helpBoxEl.classList.add('hidden');
                 helpBoxEl.classList.remove('animate-pop');
-                return; // Funktion hier beenden, Box bleibt zu
+                return; 
             }
 
             // Sonst: Inhalt aktualisieren und (falls nicht schon offen) öffnen
@@ -619,7 +669,6 @@
         }
 
         function renderGapHTML(task, index) {
-            // Die absolute Position des Feedbacks ist nun auf die direkte `relative`-Wrapper-Box bezogen.
             const inputField = `
                 <div class="relative inline-block mx-1 md:mx-2">
                     <input type="number" id="${task.id}-input-0" class="w-20 md:w-24 h-16 md:h-20 text-center text-4xl font-black text-blue-700 bg-white border-4 border-blue-300 rounded-2xl focus:border-blue-500 focus:shadow-xl outline-none transition-all shadow-inner m-0" autocomplete="off">
