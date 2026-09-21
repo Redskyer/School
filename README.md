@@ -23,7 +23,7 @@ Das Projekt befindet sich in der aktiven Weiterentwicklung. Geplant ist, die App
 ## 🚀 Live-Demo
 
 Keine Installation notwendig. Die App läuft direkt im Browser:
-👉 **[Hier klicken, um die Mathe-Safari zu starten!](https://redskyer.github.io/School/)**
+<a href="[https://www.markdownguide.org](https://redskyer.github.io/School/)" target="_blank">👉 **Hier klicken, um die Mathe-Safari zu starten!**</a>
 
 ## 🛠 Nutzung & Installation (für Entwickler/Lehrkräfte)
 
