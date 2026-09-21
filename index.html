@@ -400,9 +400,14 @@
             let methods = [];
             let resNum = op === '+' ? v1 + v2 : v1 - v2;
             
-            // WICHTIG: Erzwungenes Leerzeichen vor dem "=" und dem span für das rote "?"
+            // NEU: Hilfsfunktion für perfekt gestaffelte Abstände (Handy vs. PC)
+            const formatEqClean = (a, operator, b, result) => {
+                // Auf Handys (mx-1) rücken sie enger zusammen, auf dem PC (md:mx-3) bleiben sie breit
+                return `${a}<span class="mx-1 md:mx-3">${operator}</span>${b}<span class="mx-1 md:mx-3">=</span>${result}`;
+            };
+
             let resStr = showSolution ? resNum : '<span class="text-rose-600 font-black">?</span>';
-            let eqBase = `${v1} ${op} ${v2} &nbsp;=&nbsp; ${resStr}`;
+            let eqBase = formatEqClean(v1, op, v2, resStr);
             let baseTitle = titlePrefix ? titlePrefix.replace(':', '') : "Rechnung";
 
             // 1. Nullertrick prüfen
@@ -412,21 +417,24 @@
                 let subResNum = op === '+' ? subV1 + subV2 : subV1 - subV2;
                 let subResStr = showSolution ? subResNum : '<span class="text-rose-600 font-black">?</span>';
                 
+                let subEq = formatEqClean(subV1, op, subV2, subResStr);
+                let mainEq = formatEqClean(v1, op, v2, resStr);
+
                 let mName = titlePrefix ? `${baseTitle} (mit Nullertrick)` : "Nullertrick";
                 let html = `
-                    <div class="flex flex-col gap-3 bg-yellow-50/50 p-5 rounded-2xl border-2 border-yellow-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
-                        <div class="text-sm text-yellow-700 font-bold uppercase tracking-wider">✨ 1. Streiche die Null:</div>
-                        <div class="font-mono text-xl md:text-2xl text-yellow-900 bg-white py-3 px-4 rounded-xl border border-yellow-200 w-full shadow-inner flex justify-center whitespace-nowrap">${subV1} ${op} ${subV2} &nbsp;=&nbsp; ${subResStr}</div>
-                        <div class="text-sm text-emerald-700 font-bold mt-2 uppercase tracking-wider">✨ 2. Hänge sie wieder an:</div>
-                        <div class="font-mono text-xl md:text-2xl text-emerald-900 bg-white py-3 px-4 rounded-xl border border-emerald-200 w-full shadow-inner flex justify-center whitespace-nowrap">${v1} ${op} ${v2} &nbsp;=&nbsp; ${resStr}</div>
+                    <div class="flex flex-col gap-3 bg-yellow-50/50 p-4 md:p-5 rounded-2xl border-2 border-yellow-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
+                        <div class="text-sm md:text-base text-yellow-700 font-bold uppercase tracking-wider">✨ 1. Streiche die Null:</div>
+                        <div class="font-mono text-lg md:text-2xl text-yellow-900 bg-white py-3 px-2 md:px-4 rounded-xl border border-yellow-200 w-full shadow-inner flex justify-center whitespace-nowrap">${subEq}</div>
+                        <div class="text-sm md:text-base text-emerald-700 font-bold mt-2 uppercase tracking-wider">✨ 2. Hänge sie wieder an:</div>
+                        <div class="font-mono text-lg md:text-2xl text-emerald-900 bg-white py-3 px-2 md:px-4 rounded-xl border border-emerald-200 w-full shadow-inner flex justify-center whitespace-nowrap">${mainEq}</div>
                     </div>
                 `;
                 methods.push({ name: mName, html });
             } else {
                 // Basis-Rechnung
                 let html = `
-                    <div class="flex flex-col bg-blue-50/50 p-5 rounded-2xl border-2 border-blue-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
-                        <div class="font-mono text-2xl md:text-3xl font-black text-blue-900 bg-white py-4 px-6 rounded-xl border border-blue-200 w-full shadow-inner flex justify-center whitespace-nowrap">${eqBase}</div>
+                    <div class="flex flex-col bg-blue-50/50 p-4 md:p-5 rounded-2xl border-2 border-blue-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
+                        <div class="font-mono text-xl md:text-3xl font-black text-blue-900 bg-white py-3 md:py-4 px-3 md:px-6 rounded-xl border border-blue-200 w-full shadow-inner flex justify-center whitespace-nowrap">${eqBase}</div>
                     </div>
                 `;
                 methods.push({ name: baseTitle, html });
@@ -444,8 +452,8 @@
                     if (v2 > toNext) {
                         let nextBase = v1 + toNext;
                         let rest = v2 - toNext;
-                        t1 = `${v1} + ${toNext} &nbsp;=&nbsp; ${nextBase}`;
-                        t2 = `${nextBase} + ${rest} &nbsp;=&nbsp; ${resStr}`;
+                        t1 = formatEqClean(v1, '+', toNext, nextBase);
+                        t2 = formatEqClean(nextBase, '+', rest, resStr);
                         applies = true;
                     }
                 }
@@ -456,8 +464,8 @@
                         let prevBase = v1 - over;
                         let rest = v2 - over;
                         let subResStr = showSolution ? (prevBase - rest) : '<span class="text-rose-600 font-black">?</span>';
-                        t1 = `${v1} - ${over} &nbsp;=&nbsp; ${prevBase}`;
-                        t2 = `${prevBase} - ${rest} &nbsp;=&nbsp; ${subResStr}`;
+                        t1 = formatEqClean(v1, '-', over, prevBase);
+                        t2 = formatEqClean(prevBase, '-', rest, subResStr);
                         applies = true;
                     }
                 }
@@ -466,21 +474,21 @@
             if (applies) {
                 let transName = isTens ? "Schrittweise (Hunderterübergang)" : "Schrittweise (Zehnerübergang)";
                 let html = `
-                    <div class="flex flex-col gap-3 bg-indigo-50/50 p-5 rounded-2xl border-2 border-indigo-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
-                        <div class="font-mono text-xl md:text-2xl text-indigo-900 bg-white py-3 px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center whitespace-nowrap">${t1}</div>
-                        <div class="font-mono text-xl md:text-2xl text-indigo-900 bg-white py-3 px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center whitespace-nowrap">${t2}</div>
+                    <div class="flex flex-col gap-3 bg-indigo-50/50 p-4 md:p-5 rounded-2xl border-2 border-indigo-200 shadow-sm items-center text-center w-full max-w-md mx-auto">
+                        <div class="font-mono text-lg md:text-2xl text-indigo-900 bg-white py-3 px-2 md:px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center whitespace-nowrap">${t1}</div>
+                        <div class="font-mono text-lg md:text-2xl text-indigo-900 bg-white py-3 px-2 md:px-4 rounded-xl border border-indigo-200 w-full shadow-inner flex justify-center whitespace-nowrap">${t2}</div>
                     </div>
                 `;
                 methods.push({ name: transName, html });
             }
 
             // HTML zusammensetzen
-            let outHtml = `<div class="flex flex-col gap-8 w-full items-center text-center">`;
+            let outHtml = `<div class="flex flex-col gap-6 md:gap-8 w-full items-center text-center">`;
             methods.forEach((m, idx) => {
                 let prefix = methods.length > 1 ? `Lösungsweg ${idx + 1}: ` : "";
                 outHtml += `
                     <div class="w-full flex flex-col items-center">
-                        <div class="font-black text-blue-700 text-lg md:text-xl mb-3 uppercase tracking-wider">${prefix}<span class="text-blue-600">${m.name}</span></div>
+                        <div class="font-black text-blue-700 text-base md:text-xl mb-3 uppercase tracking-wider">${prefix}<span class="text-blue-600">${m.name}</span></div>
                         <div class="w-full flex justify-center">
                             ${m.html}
                         </div>
